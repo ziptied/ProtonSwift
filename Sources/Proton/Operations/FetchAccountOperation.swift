@@ -30,7 +30,7 @@ class FetchAccountOperation: BaseOperation {
         }
         
         let client = Client(address: url)
-        let req = API.V1.Chain.GetAccount(Name(stringValue: self.accountName))
+        let req = API.V1.Chain.GetAccountDetails(Name(stringValue: self.accountName))
         
         do {
             let res = try client.sendSync(req).get()
