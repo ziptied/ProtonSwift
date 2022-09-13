@@ -220,9 +220,9 @@ public class Proton: ObservableObject {
     
     /**
      Live updated array of producers.
-    */
-    @Published public var swapPools: [SwapPool] = []
     
+    //@Published public var swapPools: [SwapPool] = []
+    */
     /**
      Live updated array of protonESRSessions.
      */
@@ -306,7 +306,7 @@ public class Proton: ObservableObject {
         self.protonESRSessions = self.storage.getDefaultsItem([ProtonESRSession].self, forKey: "protonESRSessions") ?? []
         self.contacts = self.storage.getDefaultsItem([Contact].self, forKey: "contacts") ?? []
         self.producers = self.storage.getDefaultsItem([Producer].self, forKey: "contacts") ?? []
-        self.swapPools = self.storage.getDefaultsItem([SwapPool].self, forKey: "swapPools") ?? []
+        //self.swapPools = self.storage.getDefaultsItem([SwapPool].self, forKey: "swapPools") ?? []
         self.globalsXPR = self.storage.getDefaultsItem(GlobalsXPR.self, forKey: "globalsXPR") ?? nil
         self.global4 = self.storage.getDefaultsItem(Global4.self, forKey: "global4") ?? nil
         self.globalsD = self.storage.getDefaultsItem(GlobalsD.self, forKey: "globalsD") ?? nil
@@ -330,7 +330,6 @@ public class Proton: ObservableObject {
         self.storage.setDefaultsItem(self.protonESRSessions, forKey: "protonESRSessions")
         self.storage.setDefaultsItem(self.contacts, forKey: "contacts")
         self.storage.setDefaultsItem(self.producers, forKey: "producers")
-        self.storage.setDefaultsItem(self.swapPools, forKey: "swapPools")
         self.storage.setDefaultsItem(self.globalsXPR, forKey: "globalsXPR")
         self.storage.setDefaultsItem(self.global4, forKey: "global4")
         self.storage.setDefaultsItem(self.globalsD, forKey: "globalsD")
@@ -665,7 +664,7 @@ public class Proton: ObservableObject {
                         self.updateKYCProviders { _ in }
                         self.updateExchangeRates { _ in }
                         self.updateProducers { _ in }
-                        self.updateSwapPools { _ in }
+                        
                         
                         self.dataRequirementsReady = true
                         completion(.success(true))
@@ -1887,59 +1886,7 @@ public class Proton: ObservableObject {
 
     }
     
-        /**
-     Swaps tokens
-     - Parameter withPrivateKey: PrivateKey, FYI, this is used to sign on the device. Private key is never sent.
-     - Parameter quantity: Amount
-     - Parameter completion: Closure returning Result
-     */
-    public func swap(withPrivateKey privateKey: PrivateKey, swapPool: SwapPool,
-                     fromTokenContract: TokenContract, toTokenContract: TokenContract,
-                     quantity: Double, completion: @escaping ((Result<Any?, Error>) -> Void)) {
-    
-        guard let account = self.account else {
-            completion(.failure(Proton.ProtonError(message: "No active account")))
-            return
-        }
 
-        let min = swapPool.minimumReceived(toAmount: swapPool.toAmount(fromAmount: quantity, fromSymbol: fromTokenContract.symbol), toSymbol: toTokenContract.symbol)
-        let minAsset = Asset(min, toTokenContract.symbol)
-        let memo = "\(swapPool.liquidityTokenSymbol.name),\(minAsset.units)"
-        
-        do {
-            
-            let publicKey = try privateKey.getPublic()
-            if account.isKeyAssociated(withPermissionName: "active", forPublicKey: publicKey) {
-
-                let transfer = TransferActionABI(from: account.name, to: Name("proton.swaps"), quantity: Asset(quantity, fromTokenContract.symbol), memo: memo)
-                
-                guard let action = try? Action(account: fromTokenContract.contract, name: "transfer", authorization: [PermissionLevel(account.name, "active")], value: transfer) else {
-                    completion(.failure(Proton.ProtonError(message: "Unable to create action")))
-                    return
-                }
-                
-                self.signAndPushTransaction(withActions: [action], andPrivateKey: privateKey) { result in
-                    
-                    switch result {
-                    case .success(let response):
-                        
-                        completion(.success(response))
-                        
-                    case .failure(let error):
-                        completion(.failure(error))
-                    }
-                    
-                }
-                
-            } else {
-                completion(.failure(Proton.ProtonError(message: "Key not associated with active permissions for account")))
-            }
-            
-        } catch {
-            completion(.failure(Proton.ProtonError(message: "Key not valid for transaction")))
-        }
-
-    }
     
     /**
      Use this function generate a k1 PrivateKey object. See PrivateKey inside of EOSIO for more details
@@ -2638,34 +2585,7 @@ public class Proton: ObservableObject {
         
     }
     
-    /**
-     Fetches and updates the swap pools
-     - Parameter completion: Closure returning Result
-    */
-    public func updateSwapPools(completion: @escaping ((Result<[SwapPool]?, Error>) -> Void)) {
-
-        if let chainProvider = self.chainProvider {
-            
-            WebOperations.shared.add(FetchSwapPoolsOperation(chainProvider: chainProvider), toCustomQueueNamed: Proton.operationQueueMulti) { result in
-                
-                switch result {
-                case .success(let swapPools):
-                    
-                    self.swapPools = swapPools as? [SwapPool] ?? []
-                    completion(.success(self.swapPools))
-                    
-                case .failure(let error):
-                    completion(.failure(error))
-                }
-                
-            }
-            
-        } else {
-            completion(.failure(Proton.ProtonError(message: "Missing chainProvider")))
-        }
-        
-    }
-    
+   
     /**
      :nodoc:
      Fetches block producers for chain as well as each producers bp.json
@@ -3007,13 +2927,13 @@ public class Proton: ObservableObject {
             return
         }
         
-        guard let unresolvedCallback = self.protonESR?.signingRequest.unresolvedCallback else {
-            if autoCompleteRequest {
-                self.protonESR = nil
-            }
-            completion(.failure(ProtonError.init(message: "No unresolved callback")))
-            return
-        }
+//        guard let unresolvedCallback = self.protonESR?.signingRequest.unresolvedCallback else {
+//            if autoCompleteRequest {
+//                self.protonESR = nil
+//            }
+//            completion(.failure(ProtonError.init(message: "No unresolved callback")))
+//            return
+//        }
         
         if unresolvedCallback.background {
             

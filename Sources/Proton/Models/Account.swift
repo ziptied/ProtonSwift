@@ -356,9 +356,9 @@ public struct Account: Codable, Identifiable, Hashable, ChainProviderProtocol, T
         }
     }
     
-    public var canSwap: Bool {
-        return Proton.shared.swapPools.first(where: { $0.balanceAvailableToSwap == true }) != nil
-    }
+//    public var canSwap: Bool {
+//        return Proton.shared.swapPools.first(where: { $0.balanceAvailableToSwap == true }) != nil
+//    }
     
     public func totalLongStakedPayoutCurrencyBalanceFormatted(forLocale locale: Locale = Locale(identifier: "en_US")) -> String {
         let amount = totalLongStakedPayoutBalance.value

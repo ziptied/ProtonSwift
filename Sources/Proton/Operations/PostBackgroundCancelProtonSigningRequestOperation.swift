@@ -24,10 +24,10 @@ class PostBackgroundCancelProtonSigningRequestOperation: BaseOperation {
         
         let signingRequest = self.protonESR.signingRequest
         
-        guard let callback = signingRequest.unresolvedCallback else {
-            self.finish(retval: nil, error: Proton.ProtonError(message: "Issue getting callback"))
-            return
-        }
+//        guard let callback = signingRequest.unresolvedCallback else {
+//            self.finish(retval: nil, error: Proton.ProtonError(message: "Issue getting callback"))
+//            return
+//        }
         
         let parameters: [String: String] = ["rejected": "User canceled request"]
         

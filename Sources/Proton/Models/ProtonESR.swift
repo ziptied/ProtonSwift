@@ -20,6 +20,12 @@ public struct ProtonESR: Equatable {
     public var returnPath: URL?
     public var actions: [ProtonESRAction]
 
+//    public var unresolvedCallback: Bool {
+//        if case let self.resolvedSigningRequest {
+//            return true
+//        }
+//        return false
+//    }
     public var basicTransfer: Bool {
         if let action = self.actions.first, actions.count == 1 {
             return action.type == ProtonESRAction.ActionType.transfer ? true : false
