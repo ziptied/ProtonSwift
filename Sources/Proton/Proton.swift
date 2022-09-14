@@ -2927,13 +2927,13 @@ public class Proton: ObservableObject {
             return
         }
         
-//        guard let unresolvedCallback = self.protonESR?.signingRequest.unresolvedCallback else {
-//            if autoCompleteRequest {
-//                self.protonESR = nil
-//            }
-//            completion(.failure(ProtonError.init(message: "No unresolved callback")))
-//            return
-//        }
+        guard let unresolvedCallback = self.protonESR?.signingRequest.unresolvedCallback else {
+            if autoCompleteRequest {
+                self.protonESR = nil
+            }
+            completion(.failure(ProtonError.init(message: "No unresolved callback")))
+            return
+        }
         
         if unresolvedCallback.background {
             

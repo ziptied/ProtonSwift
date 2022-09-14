@@ -28,10 +28,10 @@ class PostBackgroundCancelProtonSigningRequestOperation: BaseOperation {
 //            self.finish(retval: nil, error: Proton.ProtonError(message: "Issue getting callback"))
 //            return
 //        }
-        
+//
         let parameters: [String: String] = ["rejected": "User canceled request"]
         
-        guard let url = URL(string: callback.url) else {
+        guard let callBack = signingRequest.unresolvedCallback, let url = URL(string: callBack.url) else {
             self.finish(retval: nil, error: Proton.ProtonError(message: "Unable to form proper URL from callback"))
             return
         }
